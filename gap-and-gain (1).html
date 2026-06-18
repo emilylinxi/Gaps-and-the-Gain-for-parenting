@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gap & Gain</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1a2e;
+    --paper: #f7f5f0;
+    --warm: #c17f4a;
+    --gain: #3d6b5e;
+    --gap: #8b4a4a;
+    --muted: #8a8a8a;
+    --card: #ffffff;
+    --border: #e8e4dc;
+    --lele: #7b5ea7;
+    --xinxin: #c17f4a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--ink);
+    padding: 28px 24px 0;
+    text-align: center;
+  }
+
+  .header-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--warm);
+    margin-bottom: 8px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 34px;
+    color: #fff;
+    line-height: 1.1;
+  }
+
+  .header h1 em { font-style: italic; color: var(--warm); }
+
+  .header-sub {
+    font-size: 13px;
+    color: #999;
+    margin-top: 8px;
+    font-weight: 300;
+    line-height: 1.5;
+    padding-bottom: 20px;
+  }
+
+  /* NAV SECTIONS */
+  .nav-sections {
+    display: flex;
+    background: #13132a;
+    border-top: 1px solid #2a2a3e;
+  }
+
+  .nav-section {
+    flex: 1;
+    padding: 10px 4px;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #555;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .nav-section.active { color: var(--warm); border-bottom-color: var(--warm); }
+
+  /* SECTION PANELS */
+  .section-panel { display: none; }
+  .section-panel.active { display: block; }
+
+  /* INNER TABS */
+  .inner-tabs {
+    display: flex;
+    background: #f0ede6;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .inner-tab {
+    flex: 1;
+    padding: 11px 8px;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .inner-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+  .inner-page { display: none; }
+  .inner-page.active { display: block; }
+
+  /* MAIN */
+  .main {
+    padding: 20px 18px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    margin-top: 24px;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  /* ARC */
+  .arc-card {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .arc-milestone {
+    display: flex;
+    align-items: flex-start;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    gap: 14px;
+  }
+
+  .arc-milestone:last-child { border-bottom: none; }
+
+  .arc-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--gain);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .arc-dot.current {
+    background: var(--warm);
+    box-shadow: 0 0 0 3px rgba(193,127,74,0.2);
+  }
+
+  .arc-year {
+    font-size: 10px;
+    color: var(--muted);
+    width: 36px;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  .arc-content { flex: 1; }
+  .arc-role { font-weight: 500; font-size: 14px; line-height: 1.3; }
+  .arc-detail { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+
+  /* INPUT AREA */
+  .input-area {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 14px;
+  }
+
+  .input-area textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: transparent;
+    line-height: 1.6;
+    min-height: 68px;
+  }
+
+  .input-area textarea::placeholder { color: #bbb; }
+
+  .chip-row {
+    display: flex;
+    gap: 7px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--muted);
+    background: var(--paper);
+  }
+
+  .chip.selected { color: white; border-color: transparent; }
+  .chip.selected.work { background: var(--gain); }
+  .chip.selected.parent { background: var(--lele); }
+  .chip.selected.xinxin-chip { background: var(--xinxin); }
+
+  .add-btn {
+    margin-top: 11px;
+    background: var(--ink);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+    width: 100%;
+    transition: background 0.15s;
+  }
+
+  .add-btn:hover { background: #2a2a4a; }
+
+  /* ENTRIES */
+  .entry {
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 13px 15px;
+    margin-bottom: 9px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .entry.lele { border-left: 3px solid var(--lele); }
+  .entry.xinxin { border-left: 3px solid var(--xinxin); }
+  .entry.work { border-left: 3px solid var(--gain); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .entry-text { font-size: 14px; line-height: 1.5; color: var(--ink); }
+
+  .entry-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 7px;
+  }
+
+  .entry-tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .entry-tag.lele { color: var(--lele); }
+  .entry-tag.xinxin { color: var(--xinxin); }
+  .entry-tag.work { color: var(--gain); }
+
+  .entry-date { font-size: 11px; color: var(--muted); }
+
+  .entry-delete {
+    background: none; border: none;
+    color: #ccc; cursor: pointer;
+    font-size: 16px; padding: 0 3px; line-height: 1;
+  }
+
+  .entry-delete:hover { color: var(--gap); }
+
+  /* REFRAME */
+  .reframe-card {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+
+  .reframe-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    margin-bottom: 3px;
+  }
+
+  .reframe-card p { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
+
+  .gap-box {
+    background: #fdf5f5; border: 1px solid #f0dada;
+    border-radius: 8px; padding: 11px 13px;
+    font-size: 13px; color: var(--gap); line-height: 1.5; margin-bottom: 9px;
+  }
+
+  .gap-box-label, .gain-box-label {
+    font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; margin-bottom: 4px; font-weight: 500;
+  }
+
+  .gap-box-label { color: #c08080; }
+  .gain-box-label { color: #6a9e8f; }
+
+  .arrow-row { text-align: center; color: var(--muted); font-size: 16px; margin: 6px 0; }
+
+  .gain-box {
+    background: #f3f9f7; border: 1px solid #c8e0da;
+    border-radius: 8px; padding: 11px 13px;
+    font-size: 13px; color: var(--gain); line-height: 1.5;
+  }
+
+  .gain-box.parent-gain {
+    background: #f5f2fa; border: 1px solid #d4c8e8;
+    color: var(--lele);
+  }
+
+  .gain-box.parent-gain .gain-box-label { color: #9a7fc0; }
+
+  /* KID HEADER */
+  .kid-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .kid-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .kid-avatar.lele { background: #ede8f5; }
+  .kid-avatar.xinxin { background: #fdf0e6; }
+
+  .kid-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .kid-age { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  /* COUNTER ROW */
+  .counter-row { display: flex; gap: 10px; margin-bottom: 4px; }
+
+  .counter-card {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .counter-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--gain);
+    line-height: 1;
+  }
+
+  .counter-label {
+    font-size: 10px; color: var(--muted);
+    margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  /* EMPTY */
+  .empty {
+    text-align: center; padding: 28px 16px;
+    color: var(--muted); font-size: 13px; line-height: 1.6;
+  }
+
+  .empty-icon { font-size: 24px; margin-bottom: 6px; }
+
+  /* MILESTONE TAG */
+  .milestone-tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 6px;
+    font-weight: 500;
+    vertical-align: middle;
+  }
+
+  .milestone-tag.lele { background: #ede8f5; color: var(--lele); }
+  .milestone-tag.xinxin { background: #fdf0e6; color: var(--xinxin); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">Gap & Gain · Personal Dashboard</div>
+  <h1>You're further along<br>than you <em>think.</em></h1>
+  <div class="header-sub">Measure backward from where you started,<br>not forward from where you want to be.</div>
+</div>
+
+<div class="nav-sections">
+  <div class="nav-section active" onclick="showSection('lele', this)">Baby A</div>
+  <div class="nav-section" onclick="showSection('xinxin', this)">Baby B</div>
+</div>
+
+<!-- =================== LE LE SECTION<!-- =================== LE LE SECTION =================== -->
+<div class="section-panel active" id="section-lele">
+  <div class="inner-tabs">
+    <div class="inner-tab active" onclick="showInnerPage('lele', 'milestones', this)">Milestones</div>
+    <div class="inner-tab" onclick="showInnerPage('lele', 'log', this)">Log a Moment</div>
+    <div class="inner-tab" onclick="showInnerPage('lele', 'reframe', this)">Reframe</div>
+  </div>
+
+  <div class="main">
+
+    <div class="inner-page active" id="lele-milestones">
+      <div class="kid-header">
+        <div class="kid-avatar lele">🌿</div>
+        <div>
+          <div class="kid-name">Baby A</div>
+          <div class="kid-age">4 years, 7 months old</div>
+        </div>
+      </div>
+
+      <div class="section-label">How far she's come</div>
+      <div class="arc-card">
+        <div class="arc-milestone">
+          <div class="arc-dot" style="background:var(--lele)"></div>
+          <div class="arc-year">Birth</div>
+          <div class="arc-content">
+            <div class="arc-role">He arrived</div>
+            <div class="arc-detail">You became a mother for the first time. Everything changed.</div>
+          </div>
+        </div>
+        <div class="arc-milestone">
+          <div class="arc-dot" style="background:var(--lele)"></div>
+          <div class="arc-year">~1 yr</div>
+          <div class="arc-content">
+            <div class="arc-role">First steps, first words</div>
+            <div class="arc-detail">The ordinary magic of a child discovering he can move through the world.</div>
+          </div>
+        </div>
+        <div class="arc-milestone">
+          <div class="arc-dot" style="background:var(--lele)"></div>
+          <div class="arc-year">~2 yr</div>
+          <div class="arc-content">
+            <div class="arc-role">Language exploding</div>
+            <div class="arc-detail">Sentences, questions, opinions. A whole person emerging.</div>
+          </div>
+        </div>
+        <div class="arc-milestone">
+          <div class="arc-dot" style="background:var(--lele)"></div>
+          <div class="arc-year">~3 yr</div>
+          <div class="arc-content">
+            <div class="arc-role">Became a big brother</div>
+            <div class="arc-detail">Baby B arrived. Baby A navigated a huge change with you beside him.</div>
+          </div>
+        </div>
+        <div class="arc-milestone">
+          <div class="arc-dot current" style="background:var(--lele); box-shadow: 0 0 0 3px rgba(123,94,167,0.2)"></div>
+          <div class="arc-year">Now</div>
+          <div class="arc-content">
+            <div class="arc-role">4½ — curious, growing, yours</div>
+            <div class="arc-detail">He is who he is partly because you showed up, imperfectly and completely.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:22px;">Moments you've captured</div>
+      <div id="lele-arc-preview"></div>
+    </div>
+
+    <div class="inner-page" id="lele-log">
+      <div class="kid-header">
+        <div class="kid-avatar lele">🌿</div>
+        <div>
+          <div class="kid-name">Baby A</div>
+          <div class="kid-age">4 years, 7 months — log a moment</div>
+        </div>
+      </div>
+      <div class="input-area">
+        <textarea id="lele-gain-text" placeholder="Something he said. A first. A hard moment you got through togethim. A small thing that mattered." rows="4"></textarea>
+        <div class="chip-row" id="lele-chips">
+          <div class="chip parent" onclick="selectChip(this,'lele','milestone')">Milestone</div>
+          <div class="chip parent" onclick="selectChip(this,'lele','connection')">Connection</div>
+          <div class="chip parent" onclick="selectChip(this,'lele','first')">A First</div>
+          <div class="chip parent" onclick="selectChip(this,'lele','repair')">Repair</div>
+          <div class="chip parent" onclick="selectChip(this,'lele','ordinary magic')">Ordinary Magic</div>
+        </div>
+        <button class="add-btn" style="background:var(--lele)" onclick="addEntry('lele')">Save this moment</button>
+      </div>
+      <div class="section-label">Baby A's log</div>
+      <div id="lele-list"></div>
+    </div>
+
+    <div class="inner-page" id="lele-reframe">
+      <div class="section-label" style="margin-top:4px;">For the hard parenting days</div>
+
+      <div class="reframe-card">
+        <h3>I'm not present enough</h3>
+        <div class="gap-box">
+          <div class="gap-box-label">The gap you measure toward</div>
+          "I'm working all day. I'm distracted. I'm not the mom I want to be right now."
+        </div>
+        <div class="arrow-row">↓</div>
+        <div class="gain-box parent-gain">
+          <div class="gain-box-label">The gain — Ordinary Magic</div>
+          Research on resilience shows it isn't built in grand moments. It's built in the ordinary ones: showing up at breakfast, reading at bedtime, being there even when you're tired. Baby A sees you working hard for your family. That's not absence. That's modeling.
+        </div>
+      </div>
+
+      <div class="reframe-card">
+        <h3>I lost my patience</h3>
+        <div class="gap-box">
+          <div class="gap-box-label">The gap you measure toward</div>
+          "I snapped at him. I wasn't the calm, regulated parent I'm supposed to be."
+        </div>
+        <div class="arrow-row">↓</div>
+        <div class="gain-box parent-gain">
+          <div class="gain-box-label">The gain — Good Inside</div>
+          The repair is the relationship. A parent who loses patience and then comes back, explains, reconnects — that teaches Baby A more about emotional safety than a parent who never cracks. You coming back is the thing.
+        </div>
+      </div>
+
+      <div class="reframe-card">
+        <h3>I'm not doing enough activities / enrichment</h3>
+        <div class="gap-box">
+          <div class="gap-box-label">The gap you measure toward</div>
+          "Other kids have classes, activities, structure. We're just getting through the day."
+        </div>
+        <div class="arrow-row">↓</div>
+        <div class="gain-box parent-gain">
+          <div class="gain-box-label">The gain — Good Enough</div>
+          Winnicott's "good enough" mother isn't a consolation prize — it's the actual goal. A child who has a parent who is reliably present, good enough, and real is better resourced than one with a perfectly optimized schedule. Getting through the day together is enough.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- =================== XIN XIN SECTION =================== -->
+<div class="section-panel" id="section-xinxin">
+  <div class="inner-tabs">
+    <div class="inner-tab active" onclick="showInnerPage('xinxin', 'milestones', this)">Milestones</div>
+    <div class="inner-tab" onclick="showInnerPage('xinxin', 'log', this)">Log a Moment</div>
+    <div class="inner-tab" onclick="showInnerPage('xinxin', 'reframe', this)">Reframe</div>
+  </div>
+
+  <div class="main">
+
+    <div class="inner-page active" id="xinxin-milestones">
+      <div class="kid-header">
+        <div class="kid-avatar xinxin">🌷</div>
+        <div>
+          <div class="kid-name">Baby B</div>
+          <div class="kid-age">7 months old</div>
+        </div>
+      </div>
+
+      <div class="section-label">How far she's come in 7 months</div>
+      <div class="arc-card">
+        <div class="arc-milestone">
+          <div class="arc-dot" style="background:var(--xinxin)"></div>
+          <div class="arc-year">Birth</div>
+          <div class="arc-content">
+            <div class="arc-role">She arrived into your arms</div>
+            <div class="arc-detail">You became a mother of two. A whole new world opened.</div>
+          </div>
+        </div>
+        <div class="arc-milestone">
+          <div class="arc-dot" style="background:var(--xinxin)"></div>
+          <div class="arc-year">~1 mo</div>
+          <div class="arc-content">
+            <div class="arc-role">First real smile</div>
+            <div class="arc-detail">Social smiling begins. She started recognizing you.</div>
+          </div>
+        </div>
+        <div class="arc-milestone">
+          <div class="arc-dot" style="background:var(--xinxin)"></div>
+          <div class="arc-year">~3 mo</div>
+          <div class="arc-content">
+            <div class="arc-role">Holding her head up, tracking faces</div>
+            <div class="arc-detail">The world getting bigger for her, one inch at a time.</div>
+          </div>
+        </div>
+        <div class="arc-milestone">
+          <div class="arc-dot" style="background:var(--xinxin)"></div>
+          <div class="arc-year">~5 mo</div>
+          <div class="arc-content">
+            <div class="arc-role">Reaching, grabbing, laughing</div>
+            <div class="arc-detail">Agency starting to emerge. She's becoming someone.</div>
+          </div>
+        </div>
+        <div class="arc-milestone">
+          <div class="arc-dot current" style="background:var(--xinxin); box-shadow: 0 0 0 3px rgba(193,127,74,0.2)"></div>
+          <div class="arc-year">Now</div>
+          <div class="arc-content">
+            <div class="arc-role">7 months — sitting, babbling, noticing everything</div>
+            <div class="arc-detail">All of this happened while you were also navigating one of the hardest seasons of your career. You held her through all of it.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:22px;">Moments you've captured</div>
+      <div id="xinxin-arc-preview"></div>
+    </div>
+
+    <div class="inner-page" id="xinxin-log">
+      <div class="kid-header">
+        <div class="kid-avatar xinxin">🌷</div>
+        <div>
+          <div class="kid-name">Baby B</div>
+          <div class="kid-age">7 months — log a moment</div>
+        </div>
+      </div>
+      <div class="input-area">
+        <textarea id="xinxin-gain-text" placeholder="A new sound. A first. A moment of connection. Something small that you want to remember." rows="4"></textarea>
+        <div class="chip-row" id="xinxin-chips">
+          <div class="chip xinxin-chip" onclick="selectChip(this,'xinxin','milestone')">Milestone</div>
+          <div class="chip xinxin-chip" onclick="selectChip(this,'xinxin','connection')">Connection</div>
+          <div class="chip xinxin-chip" onclick="selectChip(this,'xinxin','first')">A First</div>
+          <div class="chip xinxin-chip" onclick="selectChip(this,'xinxin','growth')">Growth</div>
+          <div class="chip xinxin-chip" onclick="selectChip(this,'xinxin','ordinary magic')">Ordinary Magic</div>
+        </div>
+        <button class="add-btn" style="background:var(--xinxin)" onclick="addEntry('xinxin')">Save this moment</button>
+      </div>
+      <div class="section-label">Baby B's log</div>
+      <div id="xinxin-list"></div>
+    </div>
+
+    <div class="inner-page" id="xinxin-reframe">
+      <div class="section-label" style="margin-top:4px;">For the hard parenting days</div>
+
+      <div class="reframe-card">
+        <h3>She's getting less of me</h3>
+        <div class="gap-box">
+          <div class="gap-box-label">The gap you measure toward</div>
+          "She's only 7 months. These are supposed to be the most important months and I'm distracted, stressed, not fully here."
+        </div>
+        <div class="arrow-row">↓</div>
+        <div class="gain-box parent-gain">
+          <div class="gain-box-label">The gain — Good Enough</div>
+          What Baby B needs at 7 months is warmth, responsiveness, and a face that comes back. Not a perfectly present, unstressed parent — a real one. You are feeding her, holding her, coming back to her. That is everything she needs right now.
+        </div>
+      </div>
+
+      <div class="reframe-card">
+        <h3>I'm not tracking her development closely enough</h3>
+        <div class="gap-box">
+          <div class="gap-box-label">The gap you measure toward</div>
+          "I'm not doing enough tummy time, activities, developmental tracking."
+        </div>
+        <div class="arrow-row">↓</div>
+        <div class="gain-box parent-gain">
+          <div class="gain-box-label">The gain — Ordinary Magic</div>
+          Developmental resilience research is clear: the single biggest protective factor for infants is a consistent, warm caregiver. Not a schedule. Not a curriculum. You. She already has that.
+        </div>
+      </div>
+
+      <div class="reframe-card">
+        <h3>I'm parenting two kids through an impossible season</h3>
+        <div class="gap-box">
+          <div class="gap-box-label">The gap you measure toward</div>
+          "I'm supposed to be fully present for a newborn AND a 4-year-old AND working."
+        </div>
+        <div class="arrow-row">↓</div>
+        <div class="gain-box parent-gain">
+          <div class="gain-box-label">The gain — all three frameworks agree</div>
+          You are doing something genuinely hard. The fact that you're here — noticing, logging, wanting to be present — is itself evidence of good parenting. Struggling through a hard season while staying connected to your kids isn't failure. It's the thing.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // STATE
+  const stores = {
+    lele: JSON.parse(localStorage.getItem('gg-lele') || '[]'),
+    xinxin: JSON.parse(localStorage.getItem('gg-xinxin') || '[]'),
+  };
+
+  const selectedTypes = { lele: '', xinxin: '' };
+  let currentSection = 'lele';
+
+  // NAV
+  function showSection(name, el) {
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-section').forEach(t => t.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    el.classList.add('active');
+    currentSection = name;
+    refreshSection(name);
+  }
+
+  function showInnerPage(section, page, el) {
+    const tabs = el.closest('.inner-tabs').querySelectorAll('.inner-tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const panel = document.getElementById('section-' + section);
+    panel.querySelectorAll('.inner-page').forEach(p => p.classList.remove('active'));
+    document.getElementById(section + '-' + page).classList.add('active');
+    refreshSection(section);
+  }
+
+  function refreshSection(name) {
+    renderArcPreview(name);
+    renderList(name);
+  }
+
+  // CHIPS
+  function selectChip(el, section, type) {
+    const row = el.closest('.chip-row');
+    row.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedTypes[section] = type;
+  }
+
+  // ADD ENTRY
+  function addEntry(section) {
+    const text = document.getElementById(section + '-gain-text').value.trim();
+    if (!text) return;
+    const entry = {
+      text,
+      type: selectedTypes[section] || (section === 'work' ? 'momentum' : 'ordinary magic'),
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    };
+    stores[section].unshift(entry);
+    localStorage.setItem('gg-' + section, JSON.stringify(stores[section]));
+    document.getElementById(section + '-gain-text').value = '';
+    selectedTypes[section] = '';
+    document.querySelectorAll('#' + section + '-chips .chip').forEach(c => c.classList.remove('selected'));
+    renderList(section);
+    renderArcPreview(section);
+  }
+
+  // DELETE
+  function deleteEntry(section, i) {
+    stores[section].splice(i, 1);
+    localStorage.setItem('gg-' + section, JSON.stringify(stores[section]));
+    renderList(section);
+    renderArcPreview(section);
+  }
+
+  // RENDER LIST
+  function renderList(section) {
+    const el = document.getElementById(section + '-list');
+    if (!el) return;
+    const data = stores[section];
+    if (!data.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-icon">✦</div>Nothing logged yet.<br>Start small. Even noticing counts.</div>';
+      return;
+    }
+    el.innerHTML = data.map((g, i) => `
+      <div class="entry ${section}">
+        <div class="entry-text">${g.text}</div>
+        <div class="entry-meta">
+          <span class="entry-tag ${section}">${g.type}</span>
+          <span style="display:flex;align-items:center;gap:7px;">
+            <span class="entry-date">${g.date}</span>
+            <button class="entry-delete" onclick="deleteEntry('${section}',${i})">×</button>
+          </span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // RENDER ARC PREVIEW
+  function renderArcPreview(section) {
+    const el = document.getElementById(section + '-arc-preview');
+    if (!el) return;
+    const data = stores[section];
+    if (!data.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-icon">✦</div>Log your first moment to see it here.</div>';
+      return;
+    }
+    el.innerHTML = data.slice(0, 3).map(g => `
+      <div class="entry ${section}">
+        <div class="entry-text">${g.text}</div>
+        <div class="entry-meta">
+          <span class="entry-tag ${section}">${g.type}</span>
+          <span class="entry-date">${g.date}</span>
+        </div>
+      </div>
+    `).join('') + (data.length > 3 ? `<div style="text-align:center;font-size:12px;color:var(--muted);margin-top:6px;">+${data.length - 3} more in your log</div>` : '');
+  }
+
+
+  // INIT
+  renderArcPreview('lele');
+  renderArcPreview('xinxin');
+</script>
+</body>
+</html>
